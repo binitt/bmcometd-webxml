@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+
+  <servlet>
+    <servlet-name>cometd</servlet-name>
+    <servlet-class>org.cometd.server.CometDServlet</servlet-class>
+    <init-param>
+      <param-name>ws.cometdURLMapping</param-name>
+      <param-value>/cometd/*</param-value>
+    </init-param>
+    <init-param>
+      <param-name>ws.requireHandshakePerConnection</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+    <async-supported>true</async-supported>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>cometd</servlet-name>
+    <url-pattern>/cometd/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+      <servlet-name>oort</servlet-name>
+      <servlet-class>org.cometd.oort.OortStaticConfigServlet</servlet-class>
+      <load-on-startup>2</load-on-startup>
+      <init-param>
+          <param-name>oort.url</param-name>
+          <param-value>http://host1:port/context/cometd</param-value>
+      </init-param>
+      <init-param>
+          <param-name>oort.secret</param-name>
+          <param-value>s360oortNodeSecret</param-value>
+      </init-param>
+      <init-param>
+          <param-name>oort.cloud</param-name>
+          <param-value>http://host2:port/context/cometd,http://host3:port/context/cometd</param-value>
+      </init-param>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>initializer</servlet-name>
+    <servlet-class>com.inrev.cometd.auth.AppInitializer</servlet-class>
+    <load-on-startup>3</load-on-startup>
+  </servlet>
+	
+  <filter>
+    <filter-name>cross-origin</filter-name>
+    <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
+    <async-supported>true</async-supported>
+  </filter>
+  <filter-mapping>
+    <filter-name>cross-origin</filter-name>
+    <url-pattern>/cometd/*</url-pattern>
+  </filter-mapping>
+
+  <listener>
+   	<listener-class>com.inrev.cometd.SteadyLoader</listener-class>
+  </listener>
+</web-app>
